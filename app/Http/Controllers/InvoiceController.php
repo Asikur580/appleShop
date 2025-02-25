@@ -19,7 +19,7 @@ class InvoiceController extends Controller
 
             //
             $user_id=$request->header('id');
-            $user_email=$request->header('email');
+            $user_email=$request->header('email');            
 
             $tran_id=uniqid();
             $delivery_status='Pending';
@@ -38,7 +38,7 @@ class InvoiceController extends Controller
 
             $vat=($total*3)/100;
             $payable=$total+$vat;
-
+            
             $invoice= Invoice::create([
                 'total'=>$total,
                 'vat'=>$vat,
@@ -62,6 +62,10 @@ class InvoiceController extends Controller
                     'sale_price'=>  $EachProduct['price'],
                 ]);
             }
+
+            $cart = ProductCart::where('user_id','=',$user_id);
+            $cart->delete();
+            
 
            $paymentMethod=SSLCommerz::InitiatePayment($Profile,$payable,$tran_id,$user_email);
 

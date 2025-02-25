@@ -22,29 +22,41 @@
 
 
 <script>
-    async function verify() {
+   async function verify() {
+    // Get the code from input and email from session storage
+    let code = document.getElementById('code').value;
+    let email = sessionStorage.getItem('email');
 
-        let code =document.getElementById('code').value;
-        let email=sessionStorage.getItem('email');
-        if (code.length === 0) {
-            alert("Code Required!");
-        } else {
-            $(".preloader").delay(90).fadeIn(100).removeClass('loaded');
-            let res=await axios.get("/VerifyLogin/"+email+"/"+code);
-            if(res.status===200){
-                    if(sessionStorage.getItem("last_location")){
-                        window.location.href=sessionStorage.getItem("last_location")
-                    }
-                    else{
-                        window.location.href="/"
-                    }
-            }
-            else{
-                $(".preloader").delay(90).fadeOut(100).addClass('loaded');
-                alert("Request Fail")
-            }
-        }
-
+    // Check if the code is provided
+    if (code.length === 0) {
+        alert("Code Required!");
+        return; // Exit the function if the code is empty
     }
+
+    // Show the preloader
+    $(".preloader").delay(90).fadeIn(100).removeClass('loaded');
+
+    try {
+        // Make the async request to verify the login
+        let res = await axios.get(`/VerifyLogin/${email}/${code}`);
+
+        // Check if the response status is 200 (success)
+        if (res.status === 200) {
+            // Redirect to the last location or home if none is found
+            let lastLocation = sessionStorage.getItem("last_location");
+            window.location.href = lastLocation ? lastLocation : "/";
+        } else {
+            // Hide the preloader and show failure message if status is not 200
+            $(".preloader").delay(90).fadeOut(100).addClass('loaded');
+            alert("Request Failed");
+        }
+    } catch (error) {
+        // Handle any errors during the axios request
+        $(".preloader").delay(90).fadeOut(100).addClass('loaded');
+        alert("Error during verification, please try again.");
+        console.error(error); // Optionally log the error for debugging
+    }
+}
+
 </script>
 

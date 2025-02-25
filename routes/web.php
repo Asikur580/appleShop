@@ -28,15 +28,6 @@ Route::get('/profile', [ProfileController::class, 'ProfilePage']);
 
 
 
-
-
-
-
-
-
-
-
-
 // Brand List
 Route::get('/BrandList', [BrandController::class, 'BrandList']);
 // Category List
